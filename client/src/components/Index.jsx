@@ -100,12 +100,13 @@ const Index = () => {
 
         <div className="container grid grid-2-cols gap">
           <div className="hero-heading-field">
-            <h1 className="heading-primary mt-96">This is pepe coin website</h1>
+            <h1 className="heading-primary mt-96">PEPE LAYER 2</h1>
             <p className="para-level-2 mt-32">
-              Buying Pepe Coin on Pepe Layer2 is easy, secure, and rewarding.
-              Don't miss out on the chance to be part of the meme coin
-              revolution. Get started now and embrace the future of digital
-              currency with Pepe Layer2!
+              Pepe Layer2 Memecoin is a cryptocurrency inspired by the popular
+              internet meme character Pepe the Frog . Created as a parody and a
+              nod to meme culture,Pepe Memecoin blends the playful,irreveret
+              spirit of online memes with the serious world of digital
+              currencies.
             </p>
             <div className="social-btn mt-32">
               <a href>

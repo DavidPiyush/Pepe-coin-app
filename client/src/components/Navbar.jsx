@@ -25,36 +25,6 @@ const Navbar = () => {
   } = useContext(TransactionContext);
 
   useEffect(() => {
-    const sectionHeroEl = document.querySelector(".section-hero"); // The element to observe
-    const obs = new IntersectionObserver(
-      function (entity) {
-        const ent = entity[0];
-
-        if (!ent.isIntersecting) {
-          document.body.classList.add("sticky");
-        } else {
-          document.body.classList.remove("sticky");
-        }
-      },
-      {
-        root: null,
-        threshold: 0,
-        rootMargin: "-80px",
-      }
-    );
-
-    if (sectionHeroEl) {
-      obs.observe(sectionHeroEl);
-    }
-
-    return () => {
-      if (sectionHeroEl) {
-        obs.unobserve(sectionHeroEl);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     const fetchBalance = async () => {
       const balance = await weiBalance.toString();
       const symbol = chainId === "0x38" ? "BNB" : "ETH";
