@@ -147,8 +147,6 @@
   margin-top: 96px;
 }
 
-
-
 /* ////////////////////////////////////////// 
 
  HERO SECTION CSS CLASS
@@ -434,7 +432,7 @@ FEATURES SECTION CSSS
   height: 100px;
   color: #d4cec7;
   background-color: rgb(129 117 66);
-  margin-bottom: 10px;
+  margin-bottom: 100px;
   box-shadow: rgb(52 35 0 / 19%) 54px 44px 12px;
   font-weight: bold;
   padding: 12px;
@@ -1589,7 +1587,7 @@ FEATURES SECTION CSSS
   max-width: max-content;
   /* max-width: 100%; */
   position: absolute;
-  bottom:-48px
+  bottom: -48px;
 }
 .copyright {
   color: #fff;
