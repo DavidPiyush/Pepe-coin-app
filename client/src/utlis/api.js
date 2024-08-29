@@ -44,7 +44,7 @@ export const fetchData = async () => {
 export const fetchDataUser = async (ethereumId) => {
   try {
     const response = await axios.get(`${apiUrl}/user/${ethereumId}`);
-    console.log("Fetched user data:", response.data);
+    // console.log("Fetched user data:", response.data);
     return response.data; // Return response data
   } catch (error) {
     if (error.response) {
@@ -81,7 +81,7 @@ export const fetchDataUser = async (ethereumId) => {
 
 export const postDataFromUser = async (data) => {
   try {
-    console.log("Data to post:", data);
+    // console.log("Data to post:", data);
 
     const response = await axios.post(`${apiUrl}/create`, data);
     // console.log("User created successfully:", response.data);
@@ -181,5 +181,33 @@ export const updateUserByReferedId = async (referralCode, obj) => {
     } else {
       console.error("Unexpected error:", error);
     }
+  }
+};
+
+export const socialLinks = async (ethereumId, socialLinks) => {
+  try {
+    if (socialLinks) {
+      const link = await axios.put(`${apiUrl}/user/social/link/${ethereumId}`, {
+        socialLinks: socialLinks,
+      });
+      console.log("User sucessFully update link");
+
+      return link;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const ClaimBtn = async (ethereumId, clickCount) => {
+  try {
+    const count = await axios.put(`${apiUrl}/user/count/click/${ethereumId}`, {
+      clickCount: clickCount,
+    });
+    console.log("User sucessFully update link", count.data);
+
+    return count;
+  } catch (error) {
+    console.log(error, "Not Found");
   }
 };
