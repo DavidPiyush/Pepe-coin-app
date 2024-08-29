@@ -51,15 +51,7 @@ const Refer = () => {
     return null;
   }
 
-  // setting the value in local storage.
-  localStorage.setItem("taskMoney", taskMoney);
-
-  // getting the value from local storage
-  const savedMoney = localStorage.getItem("taskMoney");
-
   const cookieValue = getCookie("referralCode");
-  // console.log(cookieValue);
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const verifyUser = async () => {
     try {
@@ -69,37 +61,34 @@ const Refer = () => {
       if (
         cookieValue === userData.referralCode &&
         currentAccount !== userData.ethereumId &&
-        currentAccount.length > 0
+        currentAccount.length > 0 &&
+        !userData.referredUsers.some(
+          (user) => user.ethereumId === currentAccount
+        )
       ) {
-        // setReferId(currentAccount);
-        // setReferAmount(100);
         const obj = {
           referEarn: 1000,
           referredUsers: {
             ethereumId: currentAccount,
-            status: currentAccount.length > 0 ? "success" : "pending",
+            status: "success",
             referTime: new Date(),
           },
         };
-        console.log(obj);
         const update = await updateUserByReferedId(userData.referralCode, obj);
-        console.log("VERIFIED USER ");
-        console.log(update);
+        console.log("VERIFIED USER", update);
       }
     } catch (error) {
-      if (currentAccount === ethereumAccount) return;
-      console.log("NOT VERIFIED USER'S line 85", error);
+      console.error("NOT VERIFIED USER", error);
     }
   };
 
   useEffect(() => {
     verifyUser();
-  }, [verifyUser]);
+  }, [verifyUser, currentAccount]);
 
   const handleClaim = async () => {
     localStorage.setItem("todayClaim", 100);
     setTodayClaim(100);
-    // console.log("giving 100 pepe!");
   };
 
   const claimToday = localStorage.getItem("todayClaim");
@@ -129,65 +118,33 @@ const Refer = () => {
       referredUser: [],
     };
   }, [currentAccount]);
-  // for updating the user account balance
-
-  const updatedObj = useMemo(() => {
-    return {
-      todayClaim: todayClaim,
-      totalEarnDay: taskMoneyBal,
-    };
-  }, [todayClaim, taskMoneyBal]); // Dependencies
-
-  // console.log()
-
-  // console.log(updatedObj);
 
   const createAccount = async () => {
-    if (currentAccount === ethereumAccount) return;
-    if (currentAccount !== ethereumAccount) {
+    if (currentAccount && ethereumAccount !== currentAccount) {
       await postDataFromUser(postObj);
     }
   };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   const updateAccount = async () => {
     try {
-      // Only proceed if the ethereumAccount matches the currentAccount
       if (ethereumAccount === currentAccount && currentAccount.length > 0) {
-        // Fetch the current user data from the database
-        const { data } = await fetchDataUser(currentAccount);
-        const currentData = data.user;
-
-        // console.log(updatedObj.totalEarnDay);
-
-        const isDataChanged =
-          currentData.todayClaim !== updatedObj.todayClaim ||
-          currentData.totalEarnDay !== updatedObj.totalEarnDay;
-        // console.log(isDataChanged, "THIS FROM LINE 204❌❌");
-        if (isDataChanged) {
-          // If data has changed, update the user data
-          await updateUserData(currentAccount, updatedObj);
-          console.log("UPDATE SUCCESSFUL!");
-
-          updateUI();
-        } else {
-          console.log("No changes detected, no update necessary.");
-        }
+        const res = await updateUserData(currentAccount, {
+          todayClaim: todayClaim,
+          totalEarnDay: taskMoneyBal,
+        });
+        console.log("UPDATE SUCCESSFUL!", res);
       }
     } catch (error) {
       console.error("UNABLE TO UPDATE ACCOUNT!", error);
     }
   };
 
-  useEffect(() => {
-    updateAccount();
-  }, [taskClaim, updateAccount, todayClaim, claimToday]);
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateUI = async () => {
     try {
       if (currentAccount.length === 0) return;
       const { data } = await fetchDataUser(currentAccount); // to find user on their Ethereum address
-      const setVariable = data.user;
+      const setVariable = await data.user;
 
       // console.log(data,"this from line 158");
 
@@ -225,11 +182,21 @@ const Refer = () => {
   };
 
   useEffect(() => {
-    updateUI();
-  }, [updateUI, updatedObj, updateAccount]);
+    const timer = setTimeout(() => {
+      if (currentAccount.length > 0) {
+        updateAccount();
+      }
+    }, 1000); // Debounce for 1 second
+
+    return () => clearTimeout(timer); // Cleanup on component unmount
+  }, [currentAccount, updateAccount]);
 
   useEffect(() => {
-    fetchData(); // to get all user from database
+    updateUI();
+  }, [updateUI]);
+
+  useEffect(() => {
+    fetchData();
   }, [currentAccount]);
 
   const baseUrl = window.location.origin;
@@ -313,7 +280,7 @@ const Refer = () => {
               </div>
               <div className="total-coins">
                 <h3>
-                  Total Coins: <span id="coin-count">{savedMoney}</span>
+                  Total Coins: <span id="coin-count">{taskClaim}</span>
                 </h3>
               </div>
             </section>
@@ -371,7 +338,7 @@ const Refer = () => {
                   : "Generate Refer link"}
               </button>
               {ethereumAccount.length > 0 ? (
-                <p id="coins">Coins Earned: {claimToday} PEPE TODAY!</p>
+                <p id="coins">Coins Earned: {dailyClaim} PEPE TODAY!</p>
               ) : (
                 " "
               )}

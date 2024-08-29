@@ -86,7 +86,11 @@ const Index = () => {
               </Link>
             </li>
             <li>
-              <Link to="/pepe" className="main-nav-link nav-cta">
+              <Link
+                href="/pepe"
+                style={{ pointerEvents: "none" }}
+                className="main-nav-link nav-cta"
+              >
                 Buy Now
               </Link>
               {/* <a href="#" className="main-nav-link nav-cta"></a> */}

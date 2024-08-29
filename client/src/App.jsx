@@ -16,6 +16,17 @@ import Spinner from "./components/Spinner.jsx"; // Import the Spinner component
 const App = () => {
   const [loading, setLoading] = useState(true);
 
+  document.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+      e.preventDefault();
+    }
+  });
+
+
   useEffect(() => {
     // Simulate loading process, e.g., fetching data or initializing
     const timer = setTimeout(() => {
