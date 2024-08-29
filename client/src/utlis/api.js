@@ -202,7 +202,7 @@ export const socialLinks = async (ethereumId, socialLinks) => {
 export const ClaimBtn = async (ethereumId, clickCount) => {
   try {
     const count = await axios.put(`${apiUrl}/user/count/click/${ethereumId}`, {
-      clickCount: clickCount,
+      clickCount:clickCount,
     });
     console.log("User sucessFully update link", count.data);
 

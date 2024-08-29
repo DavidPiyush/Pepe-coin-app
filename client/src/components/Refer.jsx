@@ -8,7 +8,6 @@ import {
   updateUserByReferedId,
   socialLinks,
   ClaimBtn,
-  timeOnClick,
 } from "../utlis/api.js";
 import earnPepe from "../image/refers/earnPepe.mp4";
 import refer from "../image/refers/refer.png";
@@ -43,7 +42,9 @@ const Refer = () => {
   const [linkReward, setLinkReward] = useState(0);
   const [link, setLink] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
-  const [clickCount, setClickCount] = useState(0);
+  const [clickCount, setClickCount] = useState(1);
+  const [click, setClick] = useState(0);
+  const [btnEl, setBtnEl] = useState("");
 
   function getCookie(name) {
     const nameEQ = `${name}=`;
@@ -93,17 +94,20 @@ const Refer = () => {
   }, [verifyUser, currentAccount]);
 
   const handleClaim = async (e) => {
-    setClickCount((prevCount) => prevCount + 1);
-
-    if (clickCount < 1) {
-      await ClaimBtn(currentAccount, clickCount);
-
-      setTodayClaim(100);
-      setIsDisabled(false);
-      el.classList.add("disabled");
-    }
+    const el = e.target;
+    setBtnEl(el);
+    setClickCount((cur) => cur + 1);
   };
 
+  async function checkBtnClick() {
+    if (click < 2) {
+      const res = await ClaimBtn(currentAccount, clickCount);
+      console.log(res.data);
+      setTodayClaim(100);
+      setIsDisabled(true);
+      btnEl.classList.add("disabled");
+    }
+  }
   // console.log(claimToday); // This will log "100"
 
   const copyToClipboard = async () => {
@@ -193,6 +197,7 @@ const Refer = () => {
 
       // console.log(setVariable.socialLinks, "this from line 158");
       setLink(setVariable.socialLinks);
+      setClick(setVariable.clickCount);
 
       // Only update the state if the data has changed
       if (setVariable) {
@@ -240,6 +245,7 @@ const Refer = () => {
   useEffect(() => {
     updateUI();
     checkVistedLink();
+    checkBtnClick();
   }, [updateUI]);
 
   useEffect(() => {
@@ -379,7 +385,7 @@ const Refer = () => {
                 id="claimButton button"
                 disabled={isDisabled}
                 onClick={(e) =>
-                  ethereumAccount.length > 0 ? handleClaim(e) : createAccount
+                  ethereumAccount.length > 0 ? handleClaim(e) : createAccount()
                 }
               >
                 {ethereumAccount.length > 0
