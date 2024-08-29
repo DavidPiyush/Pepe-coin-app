@@ -97,6 +97,7 @@ const Refer = () => {
     const el = e.target;
     setBtnEl(el);
     setClickCount((cur) => cur + 1);
+    checkBtnClick();
   };
 
   async function checkBtnClick() {
@@ -245,7 +246,6 @@ const Refer = () => {
   useEffect(() => {
     updateUI();
     checkVistedLink();
-    checkBtnClick();
   }, [updateUI]);
 
   useEffect(() => {
