@@ -101,7 +101,8 @@ const Refer = () => {
   };
 
   async function checkBtnClick() {
-    if (click < 2) {
+    if(click >2 && clickCount > 2) return
+    if (click < 2 && clickCount < 2) {
       const res = await ClaimBtn(currentAccount, clickCount);
       console.log(res.data);
       setTodayClaim(100);
