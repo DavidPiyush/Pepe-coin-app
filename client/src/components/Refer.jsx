@@ -101,7 +101,7 @@ const Refer = () => {
   };
 
   async function checkBtnClick() {
-    if(click >2 && clickCount > 2) return
+    if (click > 2 && clickCount > 2) return;
     if (click < 2 && clickCount < 2) {
       const res = await ClaimBtn(currentAccount, clickCount);
       console.log(res.data);
@@ -142,6 +142,8 @@ const Refer = () => {
 
     setSocialLink(() => data.href);
     setLinkReward(data.dataset.reward);
+
+    checkVistedLink();
 
     window.open(data.href, "_blank");
   };
@@ -246,7 +248,6 @@ const Refer = () => {
 
   useEffect(() => {
     updateUI();
-    checkVistedLink();
   }, [updateUI]);
 
   useEffect(() => {
