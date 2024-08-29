@@ -124,7 +124,14 @@ const Refer = () => {
 
   const links = document.querySelectorAll(".social-link");
 
-  function checkVistedLink() {
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    const data = e.target;
+
+    setSocialLink(() => data.href);
+    setLinkReward(data.dataset.reward);
+
     link.forEach((l) => {
       for (let el of links) {
         if (l == el.href) {
@@ -134,16 +141,6 @@ const Refer = () => {
         }
       }
     });
-  }
-
-  const handleClick = (e) => {
-    e.preventDefault();
-    const data = e.target;
-
-    setSocialLink(() => data.href);
-    setLinkReward(data.dataset.reward);
-
-    checkVistedLink();
 
     window.open(data.href, "_blank");
   };
