@@ -473,7 +473,9 @@ function Button({ ethereumAccount, onClaim, createAccount, clickCount }) {
   return (
     <button
       id="claimButton button"
-      className={`${clickCount <= 2 ? "disabled" : " "}`}
+      className={`${
+        clickCount <= 2 && ethereumAccount.length > 0 ? "disabled" : " "
+      }`}
       disabled={clickCount <= 2}
       onClick={(e) =>
         ethereumAccount.length > 0 ? onClaim(e) : createAccount()
