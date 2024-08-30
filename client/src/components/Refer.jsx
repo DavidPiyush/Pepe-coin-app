@@ -1,7 +1,6 @@
 import {
   fetchData,
   fetchDataUser,
-  // handleClick,
   postDataFromUser,
   updateUserData,
   fetchUserByReferId,
@@ -15,13 +14,10 @@ import refersAnimation from "../image/refers/pepe-refer-animation.mp4";
 import reward from "../image/refers/pepe-get-rewards.mp4";
 import generateRandomToken from "../utlis/tokenGenerator";
 import { TransactionContext } from "../context/TransactionContext";
-import { ReferContext } from "../context/RefersContext";
-import { useContext, useEffect, useState, useMemo } from "react";
+import { useContext, useEffect, useState, useMemo, useCallback } from "react";
 import "../style/refer.css";
-// import startTimer from "../utlis/countDown.jsx";
 import VisitedLink from "./VisitedLink.jsx";
 import TimerComponent from "../utlis/countDown.jsx";
-import "../style/refer.css";
 
 const randomCode = generateRandomToken();
 
@@ -31,7 +27,6 @@ const Refer = () => {
 
   const { currentAccount, connectWallet } = useContext(TransactionContext);
 
-  // to set data in ui
   const [taskClaim, setTaskClaim] = useState(0);
   const [dailyClaim, setDailyClaim] = useState(0);
   const [referClaim, setReferClaim] = useState(0);
@@ -46,32 +41,36 @@ const Refer = () => {
   const [click, setClick] = useState(0);
   const [btnEl, setBtnEl] = useState("");
 
-  function getCookie(name) {
+  const getCookie = (name) => {
     const nameEQ = `${name}=`;
     const ca = document.cookie.split(";");
     for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === " ") c = c.substring(1, c.length);
+      let c = ca[i].trim();
       if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
     }
     return null;
-  }
+  };
 
   const cookieValue = getCookie("referralCode");
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const verifyUser = async () => {
+
+  const verifyUser = useCallback(async () => {
     try {
       const { data } = await fetchUserByReferId(cookieValue);
       const userData = data.data.user;
 
-      if (currentAccount === ethereumAccount) return;
       if (
-        cookieValue === userData.referralCode &&
-        currentAccount !== userData.ethereumId &&
-        currentAccount.length > 0 &&
-        !userData.referredUsers.some(
+        currentAccount === ethereumAccount ||
+        !currentAccount ||
+        !userData ||
+        userData.referredUsers.some(
           (user) => user.ethereumId === currentAccount
         )
+      )
+        return;
+
+      if (
+        cookieValue === userData.referralCode &&
+        currentAccount !== userData.ethereumId
       ) {
         const obj = {
           referEarn: 1000,
@@ -87,65 +86,77 @@ const Refer = () => {
     } catch (error) {
       console.error("NOT VERIFIED USER", error);
     }
-  };
+  }, [currentAccount, ethereumAccount, cookieValue]);
 
   useEffect(() => {
     verifyUser();
-  }, [verifyUser, currentAccount]);
+  }, [verifyUser]);
 
   const handleClaim = async (e) => {
     const el = e.target;
+    console.log(el)
     setBtnEl(el);
     setClickCount((cur) => cur + 1);
     checkBtnClick();
   };
 
-  async function checkBtnClick() {
-    if (click > 2 && clickCount > 2) return;
+  const checkBtnClick = useCallback(async () => {
+    if (click >= 2 && clickCount >= 2) return;
     if (click < 2 && clickCount < 2) {
       const res = await ClaimBtn(currentAccount, clickCount);
       console.log(res.data);
       setTodayClaim(100);
-      setIsDisabled(true);
-      btnEl.classList.add("disabled");
+      // setIsDisabled(true);
+      if (btnEl) {
+        btnEl.classList.add("disabled");
+      }
     }
-  }
-  // console.log(claimToday); // This will log "100"
+  }, [click, clickCount, currentAccount, btnEl]);
 
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(referLink);
-      // console.log("Text copied to clipboard");
     } catch (err) {
-      // console.error("Failed to copy text: ", err);
-      throw new Error("FAILED TO COPY ADDRESSS.PLEASE TRY AGAIN", err);
+      throw new Error("FAILED TO COPY ADDRESS.PLEASE TRY AGAIN", err);
     }
   };
 
-  const links = document.querySelectorAll(".social-link");
-
-
-  const handleClick = (e) => {
-    e.preventDefault();
-    const data = e.target;
-
-    setSocialLink(() => data.href);
-    setLinkReward(data.dataset.reward);
-
-    link.forEach((l) => {
-      for (let el of links) {
-        if (l == el.href) {
-          setIsDisabled(true);
-          el.classList.add("disabled");
-          break;
-        }
+  const handleClick = async (e) => {
+    try {
+      e.preventDefault();
+      const datas = e.target;
+      if (!datas) {
+        console.error("No href found on the target element.");
+        return;
       }
-    });
+      const href = datas.href;
 
-    window.open(data.href, "_blank");
+      const { data } = await fetchDataUser(currentAccount);
+      const { socialLinks } = await data.user;
+      console.log(socialLinks);
+
+      // console.log(socialLinks.includes(href))
+      if (socialLinks.includes(href)) {
+        setIsDisabled(true);
+        if (datas.classList) {
+          datas.classList.add("disabled");
+        } else {
+          console.error("classList is undefined for the target element.");
+        }
+
+        console.log("true");
+      } else {
+        // If the link is not in the array, proceed with setting the reward and opening the link
+        setSocialLink(href);
+        setLinkReward(datas.dataset.reward);
+        window.open(href, "_blank");
+      }
+    } catch (error) {
+      console.error("Error checking link in database:", error);
+    }
   };
 
-  // console.log(socialLink, linkReward, "this from line 116 🔗🔗🔗🔗");
+  
   const postObj = useMemo(() => {
     return {
       ethereumId: currentAccount,
@@ -158,13 +169,13 @@ const Refer = () => {
     };
   }, [currentAccount]);
 
-  const createAccount = async () => {
+  const createAccount = useCallback(async () => {
     if (currentAccount && ethereumAccount !== currentAccount) {
       await postDataFromUser(postObj);
     }
-  };
+  }, [currentAccount, ethereumAccount, postObj]);
 
-  const updateAccount = async () => {
+  const updateAccount = useCallback(async () => {
     try {
       if (ethereumAccount === currentAccount && currentAccount.length > 0) {
         const res = await updateUserData(currentAccount, {
@@ -176,62 +187,45 @@ const Refer = () => {
     } catch (error) {
       console.error("UNABLE TO UPDATE ACCOUNT!", error);
     }
-  };
+  }, [ethereumAccount, currentAccount, todayClaim, linkReward]);
 
-  async function updateSocialLink() {
+  const updateSocialLink = useCallback(async () => {
     if (ethereumAccount) {
       const link = await socialLinks(currentAccount, socialLink);
-      console.log(link.data, " this from line 154");
+      console.log(link.data, "this from line 154");
     }
-  }
+  }, [ethereumAccount, currentAccount, socialLink]);
 
   useEffect(() => {
     updateSocialLink();
-  }, [socialLink]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socialLink, updateSocialLink]);
 
-  const updateUI = async () => {
+  const updateUI = useCallback(async () => {
     try {
       if (currentAccount.length === 0) return;
       const { data } = await fetchDataUser(currentAccount); // to find user on their Ethereum address
-      const setVariable = await data.user;
+      const setVariable = data.user;
 
-      // console.log(setVariable.socialLinks, "this from line 158");
-      setLink(setVariable.socialLinks);
       setClick(setVariable.clickCount);
+      setLink(setVariable.socialLinks);
 
-      // Only update the state if the data has changed
       if (setVariable) {
-        if (setVariable.todayClaim !== dailyClaim) {
-          setDailyClaim(setVariable.todayClaim);
-        }
-        if (setVariable.totalEarnDay !== linkReward) {
-          setTaskClaim(setVariable.totalEarnDay);
-        }
-        if (setVariable.referEarn !== referClaim) {
-          setReferClaim(setVariable.referEarn);
-        }
-        if (setVariable.totalBalance !== totalClaimBal) {
-          setTotalCalim(setVariable.totalBalance);
-        }
-        if (setVariable.referralCode !== token) {
-          setToken(setVariable.referralCode);
-        }
-        if (setVariable.referredUsers.length !== referFriend) {
-          setReferFriend(setVariable.referredUsers.length);
-        }
-        if (setVariable.ethereumId !== ethereumAccount) {
-          setEthereumAcount(setVariable.ethereumId);
-        }
+        setDailyClaim(setVariable.todayClaim);
+        setTaskClaim(setVariable.totalEarnDay);
+        setReferClaim(setVariable.referEarn);
+        setTotalCalim(setVariable.totalBalance);
+        setToken(setVariable.referralCode);
+        setReferFriend(setVariable.referredUsers.length);
+        setEthereumAcount(setVariable.ethereumId);
       }
-      console.log("sucessfully updated UI");
+      console.log("Successfully updated UI");
     } catch (error) {
       console.error(
         "Can't find the user on your currentAccount address",
         error
       );
     }
-  };
+  }, [currentAccount]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -251,8 +245,8 @@ const Refer = () => {
     fetchData();
   }, [currentAccount]);
 
+  
   const baseUrl = window.location.origin;
-  // const referLink = `https://pepelayer2.com/referral/${token}`;
   const referLink = `${baseUrl}/refer/${token.length > 0 ? token : ""}`;
 
   return (
@@ -285,10 +279,12 @@ const Refer = () => {
                 <div className="task">
                   <VisitedLink
                     url="https://x.com/?lang=en"
-                    className="cursor-pointer social-link"
+                    className={`${
+                      link.includes("https://x.com/?lang=en") ? "disabled" : ""
+                    }`}
                     title={"Follow us on Twitter"}
                     value={10}
-                    disabled={isDisabled}
+                    disabled={link.includes("https://x.com/?lang=en")}
                     currentAccount={currentAccount}
                     onClickLink={(e) => handleClick(e)}
                   />
@@ -297,7 +293,9 @@ const Refer = () => {
                 <div className="task">
                   <VisitedLink
                     url="https://telegram.org/"
-                    className="cursor-pointer social-link"
+                    className={`${
+                      link.includes("https://telegram.org/") ? "disabled" : ""
+                    }`}
                     title={"Join our Telegram group"}
                     value={20}
                     disabled={isDisabled}
@@ -310,7 +308,11 @@ const Refer = () => {
                 <div className="task">
                   <VisitedLink
                     url="https://www.facebook.com/"
-                    className="cursor-pointer"
+                    className={`${
+                      link.includes("https://www.facebook.com/")
+                        ? "disabled"
+                        : ""
+                    }`}
                     title={"Share our post on Facebook"}
                     value={15}
                     disabled={isDisabled}
@@ -323,7 +325,11 @@ const Refer = () => {
                 <div className="task">
                   <VisitedLink
                     url="https://www.youtube.com/"
-                    className="cursor-pointer"
+                    className={`${
+                      link.includes("https://www.youtube.com/")
+                        ? "disabled"
+                        : ""
+                    }`}
                     title={"Subscribe Our Youtube Channel"}
                     value={25}
                     disabled={isDisabled}
@@ -379,24 +385,14 @@ const Refer = () => {
               ) : (
                 ""
               )}
+              <Button ethereumAccount={ethereumAccount} createAccount={createAccount} onClaim={handleClaim} isDisabled={isDisabled} clickCount={clickCount}/>
 
-              <button
-                id="claimButton button"
-                disabled={isDisabled}
-                onClick={(e) =>
-                  ethereumAccount.length > 0 ? handleClaim(e) : createAccount()
-                }
-              >
-                {ethereumAccount.length > 0
-                  ? "Claim Today's Coins"
-                  : "Generate Refer link"}
-              </button>
               {ethereumAccount.length > 0 ? (
                 <p id="coins">Coins Earned: {dailyClaim} PEPE TODAY!</p>
               ) : (
                 " "
               )}
-              {isDisabled && <TimerComponent />}
+              {clickCount <= 2 ? <TimerComponent /> : " "}
             </div>
           </div>
         </section>
@@ -463,3 +459,21 @@ const Refer = () => {
 };
 
 export default Refer;
+
+function Button({ ethereumAccount,  onClaim, createAccount ,clickCount}) {
+  console.log(clickCount)
+  return (
+    <button
+      id="claimButton button"
+      className={`${clickCount <= 2 ? "disabled" : " "}`}
+      disabled={clickCount <=2 }
+      onClick={(e) =>
+        ethereumAccount.length > 0 ? onClaim(e) : createAccount()
+      }
+    >
+      {ethereumAccount.length > 0
+        ? "Claim Today's Coins"
+        : "Generate Refer link"}
+    </button>
+  );
+}
