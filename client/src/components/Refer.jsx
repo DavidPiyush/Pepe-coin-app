@@ -100,8 +100,9 @@ const Refer = () => {
     checkBtnClick();
   };
 
+  console.log("You click on claim button : ", clickCount)
   const checkBtnClick = useCallback(async () => {
-    if (click < 2 && clickCount < 2) {
+    if (click < 1) {
       const res = await ClaimBtn(currentAccount, clickCount);
       console.log(res.data);
       setTodayClaim(100);
