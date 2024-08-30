@@ -496,10 +496,12 @@ function Button({
   onClaim,
   createAccount,
   clickCount,
+  key
 }) {
   return (
     <button
       id="claimButton button"
+      key={key}
       className={`${
         clickCount >= 1 && currentAccount.length > 0 ? "disabled" : " "
       }`}
