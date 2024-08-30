@@ -222,6 +222,7 @@ const Refer = () => {
     }
   }, [currentAccount]);
 
+  console.log(taskClaim);
   useEffect(() => {
     const timer = setTimeout(() => {
       if (currentAccount.length > 0) {
