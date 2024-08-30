@@ -289,6 +289,7 @@ const Refer = () => {
                     disabled={link.includes("https://x.com/?lang=en")}
                     currentAccount={currentAccount}
                     onClickLink={(e) => handleClick(e)}
+                    key={"x"}
                   />
                   <span className="reward">+10 Coins</span>
                 </div>
@@ -307,6 +308,7 @@ const Refer = () => {
                     disabled={isDisabled}
                     currentAccount={currentAccount}
                     onClickLink={(e) => handleClick(e)}
+                    key={"telegram"}
                   />
 
                   <span className="reward">+20 Coins</span>
@@ -328,6 +330,7 @@ const Refer = () => {
                     disabled={isDisabled}
                     currentAccount={currentAccount}
                     onClickLink={(e) => handleClick(e)}
+                    key={"facebook"}
                   />
 
                   <span className="reward">+15 Coins</span>
@@ -349,6 +352,7 @@ const Refer = () => {
                     disabled={isDisabled}
                     currentAccount={currentAccount}
                     onClickLink={(e) => handleClick(e)}
+                    key={"youtube"}
                   />
 
                   <span className="reward">+25 Coins</span>
@@ -406,6 +410,7 @@ const Refer = () => {
                 isDisabled={isDisabled}
                 clickCount={click}
                 ethereumAccount={ethereumAccount}
+                key={"claim"}
               />
 
               {currentAccount.length > 0 ? (
