@@ -7,7 +7,8 @@ const VisitedLink = ({
   onClickLink,
   currentAccount,
   disabled,
-  className
+  className,
+  key
 }) => {
   return (
     <a
@@ -16,6 +17,7 @@ const VisitedLink = ({
       href={url}
       data-reward={currentAccount > 0 ? value : 0}
       disabled={disabled}
+      key={key}
     >
       {title}
     </a>
