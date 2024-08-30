@@ -94,7 +94,7 @@ const Refer = () => {
 
   const handleClaim = async (e) => {
     const el = e.target;
-    console.log(el)
+    console.log(el);
     setBtnEl(el);
     setClickCount((cur) => cur + 1);
     checkBtnClick();
@@ -156,7 +156,6 @@ const Refer = () => {
     }
   };
 
-  
   const postObj = useMemo(() => {
     return {
       ethereumId: currentAccount,
@@ -245,7 +244,6 @@ const Refer = () => {
     fetchData();
   }, [currentAccount]);
 
-  
   const baseUrl = window.location.origin;
   const referLink = `${baseUrl}/refer/${token.length > 0 ? token : ""}`;
 
@@ -385,14 +383,24 @@ const Refer = () => {
               ) : (
                 ""
               )}
-              <Button ethereumAccount={ethereumAccount} createAccount={createAccount} onClaim={handleClaim} isDisabled={isDisabled} clickCount={clickCount}/>
+              <Button
+                ethereumAccount={ethereumAccount}
+                createAccount={createAccount}
+                onClaim={handleClaim}
+                isDisabled={isDisabled}
+                clickCount={clickCount}
+              />
 
               {ethereumAccount.length > 0 ? (
                 <p id="coins">Coins Earned: {dailyClaim} PEPE TODAY!</p>
               ) : (
                 " "
               )}
-              {clickCount <= 2 ? <TimerComponent /> : " "}
+              {clickCount <= 2 && ethereumAccount.length > 0 ? (
+                <TimerComponent />
+              ) : (
+                " "
+              )}
             </div>
           </div>
         </section>
@@ -460,13 +468,13 @@ const Refer = () => {
 
 export default Refer;
 
-function Button({ ethereumAccount,  onClaim, createAccount ,clickCount}) {
-  console.log(clickCount)
+function Button({ ethereumAccount, onClaim, createAccount, clickCount }) {
+  console.log(clickCount);
   return (
     <button
       id="claimButton button"
       className={`${clickCount <= 2 ? "disabled" : " "}`}
-      disabled={clickCount <=2 }
+      disabled={clickCount <= 2}
       onClick={(e) =>
         ethereumAccount.length > 0 ? onClaim(e) : createAccount()
       }
