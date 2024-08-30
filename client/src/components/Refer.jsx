@@ -384,19 +384,19 @@ const Refer = () => {
                 ""
               )}
               <Button
-                ethereumAccount={ethereumAccount}
+                ethereumAccount={currentAccount}
                 createAccount={createAccount}
                 onClaim={handleClaim}
                 isDisabled={isDisabled}
                 clickCount={clickCount}
               />
 
-              {ethereumAccount.length > 0 ? (
+              {currentAccount.length > 0 ? (
                 <p id="coins">Coins Earned: {dailyClaim} PEPE TODAY!</p>
               ) : (
                 " "
               )}
-              {clickCount <= 2 && ethereumAccount.length > 0 ? (
+              {clickCount <= 2 && currentAccount.length > 0 ? (
                 <TimerComponent />
               ) : (
                 " "
