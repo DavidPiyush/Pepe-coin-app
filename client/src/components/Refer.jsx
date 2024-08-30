@@ -98,7 +98,7 @@ const Refer = () => {
     setBtnEl(el);
     setClickCount((cur) => cur + 1);
     checkBtnClick();
-    window.location.reload();
+   
   };
 
   console.log("You click on claim button : ", clickCount);
@@ -147,7 +147,7 @@ const Refer = () => {
         setSocialLink(href);
         setLinkReward(datas.dataset.reward);
         window.open(href, "_blank");
-        window.location.reload();
+       
       }
     } catch (error) {
       console.error("Error checking link in database:", error);
