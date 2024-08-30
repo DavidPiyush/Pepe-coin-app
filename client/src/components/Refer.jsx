@@ -388,7 +388,7 @@ const Refer = () => {
                 createAccount={createAccount}
                 onClaim={handleClaim}
                 isDisabled={isDisabled}
-                clickCount={clickCount}
+                clickCount={click}
               />
 
               {currentAccount.length > 0 ? (
@@ -396,7 +396,7 @@ const Refer = () => {
               ) : (
                 " "
               )}
-              {clickCount <= 2 && currentAccount.length > 0 ? (
+              {click <= 2 && currentAccount.length > 0 ? (
                 <TimerComponent />
               ) : (
                 " "
