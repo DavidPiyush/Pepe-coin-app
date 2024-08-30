@@ -101,17 +101,12 @@ const Refer = () => {
   };
 
   const checkBtnClick = useCallback(async () => {
-    if (click >= 2 && clickCount >= 2) return;
     if (click < 2 && clickCount < 2) {
       const res = await ClaimBtn(currentAccount, clickCount);
       console.log(res.data);
       setTodayClaim(100);
-      // setIsDisabled(true);
-      if (btnEl) {
-        btnEl.classList.add("disabled");
-      }
     }
-  }, [click, clickCount, currentAccount, btnEl]);
+  }, [click, clickCount, currentAccount]);
 
   const copyToClipboard = async () => {
     try {
@@ -396,7 +391,7 @@ const Refer = () => {
               ) : (
                 " "
               )}
-              {click <= 2 && currentAccount.length > 0 ? (
+              {click >= 2 && currentAccount.length > 0 ? (
                 <TimerComponent />
               ) : (
                 " "
@@ -474,9 +469,9 @@ function Button({ ethereumAccount, onClaim, createAccount, clickCount }) {
     <button
       id="claimButton button"
       className={`${
-        clickCount <= 2 && ethereumAccount.length > 0 ? "disabled" : " "
+        clickCount >= 2 && ethereumAccount.length > 0 ? "disabled" : " "
       }`}
-      disabled={clickCount <= 2 && ethereumAccount.length > 0}
+      disabled={clickCount >= 2 && ethereumAccount.length > 0}
       onClick={(e) =>
         ethereumAccount.length > 0 ? onClaim(e) : createAccount()
       }
