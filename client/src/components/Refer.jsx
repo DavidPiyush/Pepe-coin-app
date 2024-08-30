@@ -98,6 +98,7 @@ const Refer = () => {
     setBtnEl(el);
     setClickCount((cur) => cur + 1);
     checkBtnClick();
+    window.location.reload();
   };
 
   console.log("You click on claim button : ", clickCount);
@@ -146,6 +147,7 @@ const Refer = () => {
         setSocialLink(href);
         setLinkReward(datas.dataset.reward);
         window.open(href, "_blank");
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error checking link in database:", error);
@@ -278,7 +280,11 @@ const Refer = () => {
                     className={`${
                       link.includes("https://x.com/?lang=en") ? "disabled" : ""
                     }`}
-                    title={"Follow us on Twitter"}
+                    title={`${
+                      link.includes("https://x.com/?lang=en")
+                        ? "task verified"
+                        : "Follow us on Twitter"
+                    }`}
                     value={10}
                     disabled={link.includes("https://x.com/?lang=en")}
                     currentAccount={currentAccount}
@@ -292,7 +298,11 @@ const Refer = () => {
                     className={`${
                       link.includes("https://telegram.org/") ? "disabled" : ""
                     }`}
-                    title={"Join our Telegram group"}
+                    title={`${
+                      link.includes("https://telegram.org/")
+                        ? "task verified"
+                        : "Join our Telegram group"
+                    }`}
                     value={20}
                     disabled={isDisabled}
                     currentAccount={currentAccount}
@@ -309,7 +319,11 @@ const Refer = () => {
                         ? "disabled"
                         : ""
                     }`}
-                    title={"Share our post on Facebook"}
+                    title={`${
+                      link.includes("https://www.facebook.com/")
+                        ? "task verified"
+                        : "Share our post on Facebook"
+                    }`}
                     value={15}
                     disabled={isDisabled}
                     currentAccount={currentAccount}
@@ -326,7 +340,11 @@ const Refer = () => {
                         ? "disabled"
                         : ""
                     }`}
-                    title={"Subscribe Our Youtube Channel"}
+                    title={`${
+                      link.includes("https://www.youtube.com/")
+                        ? "task verified"
+                        : "Subscribe Our Youtube Channel"
+                    }`}
                     value={25}
                     disabled={isDisabled}
                     currentAccount={currentAccount}
