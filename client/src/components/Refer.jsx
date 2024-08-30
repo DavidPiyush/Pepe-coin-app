@@ -165,14 +165,14 @@ const Refer = () => {
   }, [currentAccount]);
 
   const createAccount = useCallback(async () => {
-    if (currentAccount && ethereumAccount !== currentAccount) {
+    if (currentAccount && currentAccount !== ethereumAccount) {
       await postDataFromUser(postObj);
     }
   }, [currentAccount, ethereumAccount, postObj]);
 
   const updateAccount = useCallback(async () => {
     try {
-      if (ethereumAccount === currentAccount && currentAccount.length > 0) {
+      if (currentAccount === ethereumAccount && currentAccount.length > 0) {
         const res = await updateUserData(currentAccount, {
           todayClaim: todayClaim,
           totalEarnDay: linkReward,
@@ -182,14 +182,14 @@ const Refer = () => {
     } catch (error) {
       console.error("UNABLE TO UPDATE ACCOUNT!", error);
     }
-  }, [ethereumAccount, currentAccount, todayClaim, linkReward]);
+  }, [currentAccount, ethereumAccount, todayClaim, linkReward]);
 
   const updateSocialLink = useCallback(async () => {
-    if (ethereumAccount) {
+    if (currentAccount) {
       const link = await socialLinks(currentAccount, socialLink);
       console.log(link.data, "this from line 154");
     }
-  }, [ethereumAccount, currentAccount, socialLink]);
+  }, [currentAccount, ethereumAccount, socialLink]);
 
   useEffect(() => {
     updateSocialLink();
@@ -223,6 +223,7 @@ const Refer = () => {
   }, [currentAccount]);
 
   console.log(taskClaim);
+  console.log(ethereumAccount);
   useEffect(() => {
     const timer = setTimeout(() => {
       if (currentAccount.length > 0) {
@@ -372,7 +373,7 @@ const Refer = () => {
             <div className="bubble bubble8"></div>
             <div className="bubble bubble9"></div>
             <div className="challenge-box">
-              {ethereumAccount.length > 0 ? (
+              {currentAccount.length > 0 ? (
                 <p>
                   <h2 className="h2">Daily Challenge</h2>
                   <p id="challenge">Complete today&apos;s task</p>
@@ -381,11 +382,12 @@ const Refer = () => {
                 ""
               )}
               <Button
-                ethereumAccount={currentAccount}
+                currentAccount={currentAccount}
                 createAccount={createAccount}
                 onClaim={handleClaim}
                 isDisabled={isDisabled}
                 clickCount={click}
+                ethereumAccount={ethereumAccount}
               />
 
               {currentAccount.length > 0 ? (
@@ -465,17 +467,20 @@ const Refer = () => {
 
 export default Refer;
 
-function Button({ ethereumAccount, onClaim, createAccount, clickCount }) {
-  if (clickCount > 0) {
-    console.log(clickCount);
-  }
+function Button({
+  currentAccount,
+  ethereumAccount,
+  onClaim,
+  createAccount,
+  clickCount,
+}) {
   return (
     <button
       id="claimButton button"
       className={`${
-        clickCount >= 1 && ethereumAccount.length > 0 ? "disabled" : " "
+        clickCount >= 1 && currentAccount.length > 0 ? "disabled" : " "
       }`}
-      disabled={clickCount >= 1 && ethereumAccount.length > 0}
+      disabled={clickCount >= 1 && currentAccount.length > 0}
       onClick={(e) =>
         ethereumAccount.length > 0 ? onClaim(e) : createAccount()
       }
