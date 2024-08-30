@@ -100,7 +100,7 @@ const Refer = () => {
     checkBtnClick();
   };
 
-  console.log("You click on claim button : ", clickCount)
+  console.log("You click on claim button : ", clickCount);
   const checkBtnClick = useCallback(async () => {
     if (click < 1) {
       const res = await ClaimBtn(currentAccount, clickCount);
@@ -392,7 +392,7 @@ const Refer = () => {
               ) : (
                 " "
               )}
-              {click >= 2 && currentAccount.length > 0 ? (
+              {click >= 1 && currentAccount.length > 0 ? (
                 <TimerComponent />
               ) : (
                 " "
@@ -465,14 +465,16 @@ const Refer = () => {
 export default Refer;
 
 function Button({ ethereumAccount, onClaim, createAccount, clickCount }) {
-  console.log(clickCount);
+  if (clickCount > 0) {
+    console.log(clickCount);
+  }
   return (
     <button
       id="claimButton button"
       className={`${
-        clickCount >= 2 && ethereumAccount.length > 0 ? "disabled" : " "
+        clickCount >= 1 && ethereumAccount.length > 0 ? "disabled" : " "
       }`}
-      disabled={clickCount >= 2 && ethereumAccount.length > 0}
+      disabled={clickCount >= 1 && ethereumAccount.length > 0}
       onClick={(e) =>
         ethereumAccount.length > 0 ? onClaim(e) : createAccount()
       }
