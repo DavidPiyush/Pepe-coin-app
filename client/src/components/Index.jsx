@@ -87,7 +87,7 @@ const Index = () => {
             </li>
             <li>
               <Link
-                href="/pepe" className="main-nav-link nav-cta">
+              to="/pepe" className="main-nav-link nav-cta">
                 Buy Now
               </Link>
               {/* <a href="#" className="main-nav-link nav-cta"></a> */}
