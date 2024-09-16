@@ -113,7 +113,7 @@ const Navbar = () => {
           </a>
         </li>
         <li>
-          <a href="/" className="main-nav-link">
+          <a href="/pepe" className="main-nav-link">
             How to Buy
           </a>
         </li>
